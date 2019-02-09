@@ -1,5 +1,5 @@
 # NeuroTrajectory
-##A Neuroevolutionary Approach to Local State Trajectory Learning in Autonomous Driving
+## A Neuroevolutionary Approach to Local State Trajectory Learning in Autonomous Driving
 
 This repository accompanies the paper *NeuroTrajectory: A Neuroevolutionary Approach to Local State Trajectory Learning in Autonomous Driving*.
 
