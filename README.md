@@ -9,4 +9,41 @@ Autonomous vehicles are controlled today either based on sequences of decoupled 
 
 ## Installation
 
-## Training a model
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. 
+
+### Prerequisites
+
+Clone the repository:
+```bash
+$ git clone https://github.com/RovisLab/NeuroTrajectory.git
+```
+
+The packages needed for install can be found inside requirements.txt: 
+
+```
+pip install -r requirements.txt
+```
+
+### Running the code
+
+The script which runs the main function is
+
+```
+main.py
+```
+
+### Training a model
+
+data_types.py contains the configuration parameters for the 3 possible types of networks: DGN, LSTM and Conv3D
+
+Modify DATA_SET_INFO/data_set_path to point to the training data (split in training, validation and testing).
+
+Already prepared data and stored in numpy format will be provided as .zip.
+
+At the end of each training, plots and .csv files are generated in ./train/(date_time)/
+
+## Built with
+
+* [SciKit Learn][https://scikit-learn.org/stable/] - Machine Learning with Python.
+* [Tensorflow](https://www.tensorflow.org/) - An open source machine learning framework for everyone.
+* [Numpy](http://www.numpy.org/) - NumPy is the fundamental package for scientific computing with Python.
