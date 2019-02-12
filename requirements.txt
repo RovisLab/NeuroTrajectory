@@ -1,0 +1,9 @@
+numpy
+Pillow
+opencv-python
+sympy
+sklearn
+tqdm
+matplotlib
+tensorflow==1.12.0
+keras==2.1.0
