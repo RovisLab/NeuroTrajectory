@@ -113,10 +113,13 @@ class GridSearch:
 
         self.ofile.close()
         total = time.time() - t
+        m, s = divmod(total, 60)
+        h, m = divmod(m, 60)
+        d, h = divmod(h, 24)
         t_stop = datetime.datetime.now()
         file = open(self.path + '/total_time.txt', 'w')
         file.write('Start : ' + str(t_start) + '\n')
         file.write('Stop : ' + str(t_stop) + '\n')
-        file.write('Total : ' + str(total) + '\n')
+        file.write('Total :' + "%d days, %d:%02d:%02d" % (d, h, m, s) + '\n')
         file.close()
 

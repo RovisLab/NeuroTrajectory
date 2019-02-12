@@ -54,8 +54,6 @@ class LoadData(object):
         if self.type is 'lstm_sliding':
             slide = True
 
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ', slide)
-
         # check if there are enough images to build a sequence
         if len(files) < image_sequence_length:
             print('Not enough images to build a sequence. Minimum number of consecutive grid images must be :',
@@ -196,12 +194,15 @@ class LoadData(object):
                 y[0][class_idx] = 1
 
                 if folder == 'training':
+                    print (np.shape(self.X_train), np.shape(sample))
                     self.X_train = np.concatenate((self.X_train, sample), axis=0)
                     self.Y_train = np.concatenate((self.Y_train, y), axis=0)
                 elif folder == 'validation':
+                    print(np.shape(self.X_valid), np.shape(sample))
                     self.X_valid = np.concatenate((self.X_valid, sample), axis=0)
                     self.Y_valid = np.concatenate((self.Y_valid, y), axis=0)
                 elif folder == 'testing':
+                    print(np.shape(self.X_test), np.shape(sample))
                     self.X_test = np.concatenate((self.X_test, sample), axis=0)
                     self.Y_test = np.concatenate((self.Y_test, y), axis=0)
 
@@ -211,19 +212,23 @@ class LoadData(object):
 
     def load_conv3d_data(self, folder):
         self.load_dgn_data(folder)
-        self.X_train = self.X_train.reshape(np.shape(self.X_train)[0], self.image_width, self.image_height,
-                                            self.image_channels, self.image_depth)
-        self.X_valid = self.X_valid.reshape(np.shape(self.X_valid)[0], self.image_width,
-                                            self.image_height, self.image_channels, self.image_depth)
-        self.X_test = self.X_test.reshape(np.shape(self.X_test)[0], self.image_width,
-                                          self.image_height, self.image_channels, self.image_depth)
+
+        if folder == 'training':
+            self.X_train = self.X_train.reshape(np.shape(self.X_train)[0], self.image_depth, self.image_width,
+                                                self.image_height, self.image_channels)
+        elif folder == 'validation':
+            self.X_valid = self.X_valid.reshape(np.shape(self.X_valid)[0], self.image_depth, self.image_width,
+                                                self.image_height, self.image_channels)
+        elif folder == 'testing':
+            self.X_test = self.X_test.reshape(np.shape(self.X_test)[0], self.image_depth, self.image_width,
+                                              self.image_height, self.image_channels)
 
     def load_new_data(self):
         print(self.data_path)
         self.number_of_classes = len(next(os.walk(self.data_path + '/training/'))[1])
         print('Number of classes found : ', self.number_of_classes)
 
-        if self.type is 'lstm_sliding' or 'lstm_bucketing':
+        if self.type is 'lstm_sliding' or self.type is 'lstm_bucketing':
             self.X_train = np.zeros(shape=(0, 3, self.image_height, self.image_width, self.image_channels))
             self.X_valid = np.zeros(shape=(0, 3, self.image_height, self.image_width, self.image_channels))
             self.X_test = np.zeros(shape=(0, 3, self.image_height, self.image_width, self.image_channels))

@@ -21,6 +21,7 @@ def compile_model_cnn(genome, nb_classes, input_shape):
 
     logging.info("Architecture:%s,%s,%s,%d" % (str(nb_neurons), activation, optimizer, nb_layers))
 
+
     model = Sequential()
 
     # Add each layer.
@@ -51,12 +52,19 @@ def compile_model_cnn(genome, nb_classes, input_shape):
     return model
 
 
-def dgn_model(input_shape, parameters):
-    logging.info("Architecture:%s,%s,%s,%s" % (parameters[0], parameters[1], parameters[2], parameters[3]))
-    print(input_shape)
+def dgn_model(X_train_shape, parameters):
+    nb_neurons_1st_fc = int(parameters[0])
+    nb_neurons_2nd_fc = int(parameters[1])
+    loss_function = str(parameters[2])
+    optimizer = str(parameters[3])
+
+    print('Build model...')
+    print('X_train shape: ', X_train_shape)
+    logging.info("Architecture:%s,%s,%s,%s" % (nb_neurons_1st_fc, nb_neurons_2nd_fc, loss_function, optimizer))
+    print(nb_neurons_1st_fc, nb_neurons_2nd_fc, loss_function, optimizer)
 
     model = Sequential()
-    model.add(Conv2D(filters=32, input_shape=input_shape[1:], kernel_size=(9, 9), strides=(4, 4), padding='valid'))
+    model.add(Conv2D(filters=32, input_shape=X_train_shape[1:], kernel_size=(9, 9), strides=(4, 4), padding='valid'))
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2), padding='valid'))
     model.add(BatchNormalization())
@@ -65,37 +73,44 @@ def dgn_model(input_shape, parameters):
     model.add(MaxPooling2D(pool_size=(3, 3), strides=(2, 2), padding='valid'))
     model.add(BatchNormalization())
     model.add(Flatten())
-    model.add(Dense(units=int(parameters[0]), input_shape=(128, 128, 3)))
+    model.add(Dense(units=int(nb_neurons_1st_fc), input_shape=(128, 128, 3)))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(BatchNormalization())
-    model.add(Dense(units=int(parameters[1])))
+    model.add(Dense(units=int(nb_neurons_2nd_fc)))
     model.add(Activation('relu'))
     model.add(Dropout(0.5))
     model.add(BatchNormalization())
     model.add(Dense(int(DATA_SET_INFO['num_classes'])))
     model.add(Activation('softmax'))
-    model.compile(loss=parameters[2], optimizer=parameters[3], metrics=['accuracy'])
+    model.compile(loss=loss_function, optimizer=optimizer, metrics=['accuracy'])
 
+    print(model.summary())
     return model
 
 
 def conv3d_model(X_train_shape, parameters):
-    print('Build model...')
-    print('X_train shape:', X_train_shape)
+    loss_function = str(parameters[0])
+    optimizer = str(parameters[1])
+    hidden_units = int(parameters[2])
+    fc_layers = int(parameters[3])
 
-    logging.info("Architecture:%s,%s,%s,%s" % (parameters[0], parameters[1], parameters[2], parameters[3]))
+    print('Build model...')
+    print('X_train shape: ', X_train_shape)
+
+
+    logging.info("Architecture:%s,%s,%s,%s" % (loss_function, optimizer, hidden_units, fc_layers))
 
     model = Sequential()
-    model.add(Conv3D(parameters[2], kernel_size=(3, 3, 3), activation='relu', input_shape=X_train_shape[1:],
-                     data_format='channels_last', border_mode='same'))
-    model.add(MaxPooling3D(pool_size=(3, 3, 3)))
-    model.add(BatchNormalization())
+    model.add(Conv3D(hidden_units, kernel_size=(3, 3, 3), activation='relu', input_shape=X_train_shape[1:],
+                     data_format='channels_last', padding='same'))
+    model.add(MaxPooling3D(pool_size=(3, 3, 3), padding='same'))
+    #model.add(BatchNormalization())
     model.add(Flatten(name='flat'))
-    model.add(Dense(parameters[3], activation='relu', name='fc6'))
+    model.add(Dense(fc_layers, activation='relu', name='fc1'))
     model.add(Dropout(.5))
     model.add(Dense(DATA_SET_INFO['num_classes'], activation='softmax'))
-    model.compile(loss=parameters[0], optimizer=parameters[1], metrics=['accuracy'])
+    model.compile(loss=loss_function, optimizer=optimizer, metrics=['accuracy'])
 
     print(model.summary())
 
@@ -103,16 +118,17 @@ def conv3d_model(X_train_shape, parameters):
 
 
 def lstm_model(X_train_shape, parameters):
+    hidden_units = int(parameters[0])
+    dropout_parameter = int(parameters[1])
+    loss_function = str(parameters[2])
+    optimizer = str(parameters[3])
+    lstm_cells = int(parameters[4])
+
     print('Build model...')
-    print('X_train shape:', X_train_shape)
+    print('X_train shape: ', X_train_shape)
 
     input_shape = (DATA_SET_INFO['image_channels'], DATA_SET_INFO['image_width'],
                    DATA_SET_INFO['image_height'], DATA_SET_INFO['image_channels'])
-    hidden_units = parameters[0]
-    dropout_parameter = parameters[1]
-    loss_function = parameters[2]
-    optimizer = parameters[3]
-    lstm_cells = parameters[4]
 
     logging.info("Architecture:%s,%s,%s,%s,%s" % (hidden_units, dropout_parameter, loss_function, optimizer, lstm_cells))
 
@@ -280,4 +296,3 @@ def lstm_model(X_train_shape, parameters):
     print(model.summary())
 
     return model
-
